@@ -18,8 +18,10 @@ from suds_passworddigest.token import UsernameDigestToken
 from suds.bindings import binding
 binding.envns = ('SOAP-ENV', 'http://www.w3.org/2003/05/soap-envelope')
 
-from onvif.exceptions import ONVIFError
-from definition import SERVICES, NSMAP
+#from onvif.exceptions import ONVIFError
+from visionUNQ.onvif.exceptions import ONVIFError
+from definition import SERVICES
+#from definition import NSMAP
 
 # Ensure methods to raise an ONVIFError Exception
 # when some thing was wrong
