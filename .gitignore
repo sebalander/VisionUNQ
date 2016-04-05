@@ -1,0 +1,15 @@
+*~
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.eps
+*.jpeg
+*.log
+*.out
+*.pdf
+*.pgf
+*.pyc
+*.pyo
+*.svg
+**/resources/*
