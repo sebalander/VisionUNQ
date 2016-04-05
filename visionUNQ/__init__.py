@@ -7,7 +7,10 @@ __all__ = ['funciones_correccion',
            'camera',
            'capture',
            'common',
-           'mainLili',
            'varglobal',
            'video_process',
-           'windows']
+           'windows',
+           'CameraManager',
+           'FishEyeCamera',
+           'IPCamera',
+           'PTZCamera']
