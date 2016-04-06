@@ -4,20 +4,17 @@ Created on Tue Jan 26 20:13:34 2016
 
 @author: lilian
 """
-
+# %% IMPORTS
 from PyQt4 import QtGui, QtCore
-import sys, time
+import sys
+import time
 import cv2
 import logging
 
-sys.path.append('../')  # where modules are
-#import visionUNQ as unq
+from ui import principal
+import CameraManager
 
-import visionUNQ.ui.principal as principal
-#import visionUNQ.onvif as onvif
-from visionUNQ import CameraManager
-
-
+# %% DECLARATIONS
 class WorkThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -197,6 +194,8 @@ class PrincipalForm(QtGui.QMainWindow, principal.Ui_MainWindow):
         self.feLabel.setPixmap(pixmap)
         QtGui.QApplication.processEvents()
         
+
+# %% MAIN
 def main():
     logging.basicConfig(level=logging.DEBUG)
     logging.info('Inicio')

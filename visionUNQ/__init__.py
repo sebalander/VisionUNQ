@@ -10,7 +10,4 @@ __all__ = ['funciones_correccion',
            'varglobal',
            'video_process',
            'windows',
-           'CameraManager',
-           'FishEyeCamera',
-           'IPCamera',
-           'PTZCamera']
+           'cameras']
