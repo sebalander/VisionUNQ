@@ -11,12 +11,8 @@ import time
 import cv2
 import logging
 
-sys.path.append('../')  # where modules are
-#from visionUNQ.ui import principal
-#from visionUNQ import CameraManager
-import visionUNQ.ui.principal as principal
-from visionUNQ import CameraManager
-
+from ui import principal
+import CameraManager
 
 # %% DECLARATIONS
 class WorkThread(QtCore.QThread):
