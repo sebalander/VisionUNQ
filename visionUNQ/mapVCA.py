@@ -10,9 +10,6 @@ coordinates.
 #%% IMPORTS
 import numpy as np
 
-
-
-
 #%% DECLARATION
 def paramflat(parametros):
     '''
@@ -60,11 +57,8 @@ def paramflat(parametros):
     # T_1 = TT[14:].reshape(3,3)
     return TT
 
-
-
-
 #%% DECLARATION
-def VCA2Map(prm,T,xI,yI):
+def VCA2Map(xI,yI,prm):
     """
     Funtion transforms coordinates in VCA image to map, less 
     cumbersome than ForwardVCA2Map. Parameters are provided as 
@@ -72,8 +66,10 @@ def VCA2Map(prm,T,xI,yI):
     
     Parameters
     ----------
-    prm : vector consisting of center, k, Px, Py, Pz.
-    T : 3x3 rotation matrix.
+    prm : vector consisting of center, k, Px, Py, Pz, and matrices T and T_1
+            flattened.
+        If the image to be processed has been resized (original is 1920), 
+        must rescale center and k (possibly Px, Py, Pz too?)
     xI,yI : coordinates to be transformed.   
     
     Returns
@@ -90,39 +86,12 @@ def VCA2Map(prm,T,xI,yI):
     --------
     import numpy as np
     # Read parameters from file
-    with open('parametrosoptimizados.txt', 'rb') as f:
+    
+    with open('../resources/parametrosOptimizados.txt', 'rb') as f:
         prm = np.loadtxt(f)
     
-    # To recover original data:
-    const = prm[:5] # save toghether cen,k,Px,Py,Pz
-    T = prm[5:14].reshape(3,3) # matrix for VCA->Map rotation
-    T_1 = prm[14:].reshape(3,3) # matrix for Map->VCA rotation
-    
-    # Try VCA->Map transformation with optimized paramters using
-    # calibration points.
-    
-    # Load calibration points
-    with open('puntos.txt', 'rb') as f:
-        X = np.loadtxt(f)
-        
-    # Forward (VCA->Map), subtract from "what it shoud be" to get error
-    dif = (
-            np.array(VCA2Map(const, T, X[:,0], X[:,1])).transpose()
-            - X[:,2:] )
-    
-    # Average error
-    np.average(np.average(dif/X[:,2:]))
-    
-    # Backwards (Map->VCA), with optimized paramters using 
-    # calibration points
-    
-    dif = (
-        np.array(Map2VCA(const,T_1,X[:,2],X[:,3])).transpose() 
-        - X[:,:2] )
-    
-    # Average relative error
-    np.average(np.average(dif/X[:,:2]))
-    
+    # apply transformation to points xI, yI
+    [xM, yM] = VCA2map(xI, yI) 
     """
     
     # Auxililar calculations on panoramic coordinates
@@ -139,12 +108,63 @@ def VCA2Map(prm,T,xI,yI):
     Sfi = np.sin(fi)
     
     ## salteandome las cartesianas paso directamente al mapa
+    T = prm[5:14].reshape(3,3) # matrix for VCA->Map rotation
     Rho = -prm[4]/(St*(T[2,0]*Cfi+T[2,1]*Sfi)+Ct*T[2,2])
     xM = Rho*(St*(T[0,0]*Cfi+T[0,1]*Sfi)+T[0,2]*Ct)+prm[2]
     yM = Rho*(St*(T[1,0]*Cfi+T[1,1]*Sfi)+T[1,2]*Ct)+prm[3]
     
     return xM,yM
 
+#%% DECLARATION
+def map2VCA(xM, yM, prm):
+    """
+    Funtion transforms coordinates in Map to VCA image. Parameters are
+    provided as arguments.
+    
+    Parameters
+    ----------
+    prm : vector consisting of center, k, Px, Py, Pz, and matrices T and T_1
+            flattened.
+        If the image to be processed has been resized (original is 1920), 
+        must rescale center and k (possibly Px, Py, Pz too?)
+    xM, yM : coordinates to be transformed.   
+    
+    Returns
+    -------
+    xM, yM : coordinates in map frame of reference.
+    
+    See Also
+    --------
+    
+    Notes
+    -----
+    
+    Examples
+    --------
+    import numpy as np
+    # Read parameters from file
+    with open('parametrosoptimizados.txt', 'rb') as f:
+        prm = np.loadtxt(f)
+    
+    # apply transformation to points xI, yI
+    [xI, yI] = map2VCA(xM, yM) 
+    """
+    
+    Xaux = np.matrix([xM,yM,0] - prm[2:5]).transpose()
+    
+    T_1 = prm[14:].reshape(3,3) # matrix for Map->VCA rotation
+    
+    XC = T_1.dot(Xaux) # camera coordinates
+    
+    fi = np.arctan2(XC[1],XC[0]) # angle in image
+    t = np.arctan2(np.sqrt(XC[0]**2+XC[1]**2),XC[2])
+    
+    r = prm[1]*np.tan(t/2) # radius in image
+    
+    xVCA = prm[0] + r*np.cos(fi)
+    yVCA = prm[0] + r*np.sin(fi)
+    
+    return xVCA[0,0],yVCA[0,0]
 
 #%% DECLARE FUNCTION
 def VCA2Earth_RelErr(prm,XX):
@@ -196,81 +216,6 @@ def VCA2Earth_err(prm,XX):
                    + (XM_estimate[1]-XX[3])**2  )
     
     return np.array([er,er/d])
-
-#%% DECLARATION
-def Map2VCA(prm, T_1, xM, yM):
-    """
-    Funtion transforms coordinates in Map to VCA image. Parameters are
-    provided as arguments.
-    
-    Parameters
-    ----------
-    prm : vector consisting of center, k, Px, Py, Pz.
-    T : 3x3 rotation matrix.
-    xI,yI : coordinates to be transformed.   
-    
-    Returns
-    -------
-    xM,yM : coordinates in map frame of reference.
-    
-    See Also
-    --------
-    
-    Notes
-    -----
-    
-    Examples
-    --------
-    import numpy as np
-    # Read parameters from file
-    with open('parametrosoptimizados.txt', 'rb') as f:
-        prm = np.loadtxt(f)
-    
-    # To recover original data:
-    const = prm[:5] # save toghether cen,k,Px,Py,Pz
-    T = prm[5:14].reshape(3,3) # matrix for VCA->Map rotation
-    T_1 = prm[14:].reshape(3,3) # matrix for Map->VCA rotation
-    
-    # Try VCA->Map transformation with optimized paramters using
-    # calibration points.
-    
-    # Load calibration points
-    with open('puntos.txt', 'rb') as f:
-        X = np.loadtxt(f)
-        
-    # Forward (VCA->Map), subtract from "what it shoud be" to get error
-    dif = (
-            np.array(VCA2Map(const, T, X[:,0], X[:,1])).transpose()
-            - X[:,2:] )
-    
-    # Average error
-    np.average(np.average(dif/X[:,2:]))
-    
-    # Backwards (Map->VCA), with optimized paramters using 
-    # calibration points
-    
-    dif = (
-        np.array(Map2VCA(const,T_1,X[:,2],X[:,3])).transpose() 
-        - X[:,:2] )
-    
-    # Average relative error
-    np.average(np.average(dif/X[:,:2]))
-    
-    """
-    
-    Xaux = np.matrix([xM,yM,0] - prm[2:5]).transpose()
-    
-    XC = T_1.dot(Xaux) # camera coordinates
-    
-    fi = np.arctan2(XC[1],XC[0]) # angle in image
-    t = np.arctan2(np.sqrt(XC[0]**2+XC[1]**2),XC[2])
-    
-    r = prm[1]*np.tan(t/2) # radius in image
-    
-    xVCA = prm[0] + r*np.cos(fi)
-    yVCA = prm[0] + r*np.sin(fi)
-    
-    return xVCA[0,0],yVCA[0,0]
 
 
 #%% DECLARATION
@@ -338,4 +283,3 @@ def forwardVCA2Map(parametros,xI,yI):
     yM = Rho*(St*(T21*np.cos(fi)+T22*np.sin(fi))+T23*Ct)+Py
 
     return xM,yM
-
