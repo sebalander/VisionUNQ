@@ -69,7 +69,7 @@ def VCA2Map(xI,yI,prm):
     prm : vector consisting of center, k, Px, Py, Pz, and matrices T and T_1
             flattened.
         If the image to be processed has been resized (original is 1920), 
-        must rescale center and k (possibly Px, Py, Pz too?)
+        must rescale center and k.
     xI,yI : coordinates to be transformed.   
     
     Returns
@@ -126,7 +126,7 @@ def map2VCA(xM, yM, prm):
     prm : vector consisting of center, k, Px, Py, Pz, and matrices T and T_1
             flattened.
         If the image to be processed has been resized (original is 1920), 
-        must rescale center and k (possibly Px, Py, Pz too?)
+        must rescale center and k.
     xM, yM : coordinates to be transformed.   
     
     Returns
