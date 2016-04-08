@@ -9,7 +9,7 @@ Use
 ---
 To use this python code there is no installation, just copy the folder visionUNQ to your computer and import it as a package. Runs on python2 (intended to run with python3) and OpenCV-3.1.0.
 
-Requires: onvif (installed from source as root?), wxPython, pickle, PyQt.
+Python libraries it depends on: opencv, numpy, onvif, wxPython, pickle, PyQt, neurolab, urllib2.
 
 Repository Content
 ------------------

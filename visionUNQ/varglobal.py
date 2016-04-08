@@ -36,7 +36,7 @@ import neurolab
 # Importo Pickle
 import pickle
 
-import main  
+import mainYabo
 
 def importVar(name, var):
     try:
@@ -142,7 +142,7 @@ class VariablesGlobales():
             #self.pv.mog_learningRate_bk = self.pv.mog_learningRate
             #self.pv.mog_learningRate = 0
         if num == 4:
-            self.im_mask = main.video_process.createMask(self.captura.sx,
+            self.im_mask = mainYabo.video_process.createMask(self.captura.sx,
                             self.captura.sy,
                             self.mouseRoi[0],
                             self.mouseRoi[2],
@@ -158,7 +158,7 @@ class VariablesGlobales():
         if num == 2:
             self.mouseRoi = importVar(self.fileName + 'mouseRoi', self.mouseRoi)
             self.frame.goToMain()
-            self.switchCaptura(main.capture.AcqCapture(\
+            self.switchCaptura(mainYabo.capture.AcqCapture(\
             self.vidAcq, self.captura.zoom))
             self.createVideoCapture()
         if num == 1:
@@ -199,7 +199,7 @@ class VariablesGlobales():
     def createVideoCapture(self):
         # Defino la grabación del video
         if self.boolRecord:
-            self.objRec = main.capture.VideoRec(self.intVideos,
+            self.objRec = mainYabo.capture.VideoRec(self.intVideos,
                                                 self.captura.sx,
                                                 self.captura.sy)
     

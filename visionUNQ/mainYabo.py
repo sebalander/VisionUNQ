@@ -8,7 +8,7 @@ Main de yabo,  no se que hace
 """
 
 #-------------------------------------------------------------------------
-# Importo librerias
+# %% Importo librerias
 #-------------------------------------------------------------------------
 
 # OpenCV
@@ -34,7 +34,7 @@ import windows
 import time
 
 #------------------------------------------------------------------------- 
-
+# %%
 def draw_info(res, vg):
     # Grafico la informacion en pantalla
     draw_str(res, (20, 20), "multithread    :  " + str(vg.threaded_mode))

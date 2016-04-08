@@ -441,7 +441,7 @@ def maskKeypoints(mask, kp, des):
     
     while i < len(kptemp):
     
-        if mask[(int(kptemp[i].pt[1]),int(kptemp[i].pt[0]))] <> 255:
+        if mask[(int(kptemp[i].pt[1]),int(kptemp[i].pt[0]))] != 255:
             kptemp.remove(kptemp[i])
             destemp = np.delete(destemp, i, 0)
         else:
