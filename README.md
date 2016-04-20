@@ -9,8 +9,6 @@ Use
 ---
 To use this python code there is no installation, just copy the folder visionUNQ to your computer and import it as a package. Runs on python2 (intended to run with python3) and OpenCV-3.1.0.
 
-Python libraries it depends on: opencv, numpy, onvif, wxPython, pickle, PyQt, neurolab, urllib2.
-
 Repository Content
 ------------------
 - visionUNQ : is a packaje containing functions, objects, etc.
@@ -34,3 +32,11 @@ Procedeeng de la 2015 XVI Workshop on Information Processing and Control (RPIC) 
 Tesis Yabo
 
 Tesis Stanganelli (proximamente)
+
+Dependecies
+-----------
+
+Python libraries it depends on: opencv, numpy, onvif, wxPython, pickle, PyQt, neurolab, urllib3. Most og them installed via pip if not present already.
+
+wxPython built from source (http://wxpython.org/Phoenix/snapshot-builds/):
+python3 setup.py install

@@ -14,7 +14,7 @@ Declaration of clases
 
 # Importo librerias
 import numpy as np
-import urllib2   
+import urllib3
 import cv2
 import time
 

@@ -161,7 +161,7 @@ class ParameterSlider(wx.Slider):
         
     def OnScroll(self, e):
         value = self.GetValue()
-        if self.scale <> 1: value = value/self.scale
+        if self.scale != 1: value = value/self.scale
         setattr(self.vg.pv, self.parameter, value)
         if self.parameter == 'ksize1':
             self.vg.pv.createKernel()
