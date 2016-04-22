@@ -36,7 +36,7 @@ Tesis Stanganelli (proximamente)
 Dependecies
 -----------
 
-Python libraries it depends on: opencv, numpy, onvif, wxPython, pickle, PyQt, neurolab, urllib3. Most og them installed via pip if not present already.
+Python libraries it depends on: opencv, numpy, onvif, wxPython, pickle, PyQt, neurolab, urllib3. Most of them installed via pip if not already present.
 
-wxPython built from source (http://wxpython.org/Phoenix/snapshot-builds/):
-python3 setup.py install
+wxPython installed from source (http://wxpython.org/Phoenix/snapshot-builds/):
+$ sudo python3 setup.py install
