@@ -37,14 +37,13 @@ import cv2
 EVT_NEW_IMAGE = wx.PyEventBinder(wx.NewEventType(), 0)
 
 no_resize = wx.DEFAULT_FRAME_STYLE & ~ (wx.RESIZE_BORDER | 
-                                        wx.RESIZE_BOX | 
                                         wx.MAXIMIZE_BOX)
 
 #----------------------------------------------------------------------
 
 def gui_openFile(parent, message):
     # Parte gráfica
-    dlg = wx.FileDialog(parent, message, "./videos/", "", "*.*", wx.OPEN)
+    dlg = wx.FileDialog(parent, message, "../resources/", "", "*.*")
     if dlg.ShowModal() == wx.ID_OK:
         path = dlg.GetPath()
         mypath = os.path.basename(path)
@@ -394,8 +393,8 @@ class PanelSelect(wx.Panel):
         self.parent = parent
         self.vg = parent.vg
         
-        png = wx.Image('logo_unqui.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-        wx.StaticBitmap(self, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
+        #png = wx.Image('logo_unqui.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        #wx.StaticBitmap(self, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
         
         b1 = wx.Button(self, -1, "Capturar archivo", (46,114), (150,30))
         b2 = wx.Button(self, -1, "Capturar cámara web", (46,154), (150,30))
@@ -407,7 +406,7 @@ class PanelSelect(wx.Panel):
         strFile = gui_openFile(self, "Seleccione el video")
         
         self.vg.setCaptura(mainYabo.capture.FileCapture(strFile, self.vg.zoom))
-        self.vg.fileName = (strFile.rpartition('/')[-1].rpartition('.')[0] + '_').encode('ascii')
+        self.vg.fileName = (strFile.rpartition('/')[-1].rpartition('.')[0] + '_') #.encode('ascii')
         
         self.vg.switchToMode(1)
         self.WainUntilLoad()

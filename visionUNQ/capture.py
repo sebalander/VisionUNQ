@@ -69,8 +69,8 @@ class FileCapture(Capture):
         while not self.isReady():
             time.sleep(0.1)      
         
-        self.sx = int(self.cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
-        self.sy = int(self.cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
+        self.sx = int(self.cap.get(3)) # Width del video
+        self.sy = int(self.cap.get(4)) # El otro CV_CAP_PROP_FRAME_HEIGHT = 4
     
     def reinit(self):
         self.__init__(self.cam, self.zoom)
@@ -121,7 +121,8 @@ class VideoRec():
         self.out = []
         self.intVideos = intVideos
         
-        fourcc = cv2.cv.CV_FOURCC(*'XVID')
+#        fourcc = cv2.cv.CV_FOURCC(*'XVID')
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Códec de video
         for i in range(0,intVideos):
             self.out.append(())
             self.out[i] = cv2.VideoWriter('output_'+str(i)+'.avi',fourcc, 5, (sx,sy), ((i==0) or (i==1)))

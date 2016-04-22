@@ -110,17 +110,17 @@ def process_frame(frame, vg, t0):
             except:
                 vg.mask_contour = cv2.findContours(np.uint8(vg.im_mask),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
                 vg.im_mask_border = 0*frame[:,:,0].astype('uint8')
-                cv2.drawContours(vg.im_mask_border,vg.mask_contour[0],-1,255,2)
+                cv2.drawContours(vg.im_mask_border,vg.mask_contour[1],0,255,2)
                 vg.im_mask_border = (vg.im_mask_border>0)
             
             vg.im_bf2 = vg.im_bf2*(vg.im_lanes>0)
             
             # Grafico bordes sobre la figura a mostrar
             vg.contours = cv2.findContours(vg.im_bf2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-            #cv2.drawContours(im_main,vg.contours[0],-1,(0,255,0),2)  
+            cv2.drawContours(im_main,vg.contours[1],-1,(150,200,0),2)  
             
             contours = cv2.findContours(np.uint8(vg.im_mask),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-            cv2.drawContours(im_main,contours[0],-1,(251,244,213),2)
+            cv2.drawContours(im_main,contours[1],-1,(251,244,213),2)
             
             # Separo en blobs
             vg.labels = sp.ndimage.label(vg.im_bf2)
@@ -165,11 +165,11 @@ def process_frame(frame, vg, t0):
                         vg.im_label = im_label
                         vg.net_input = net_input
                         
-                        output, im_main = classifyBlob(net_input,
-                                                       vg.ffnet,
-                                                       vg.label_find[k],
-                                                       im_main,
-                                                       False,)
+#                        output, im_main = classifyBlob(net_input,
+#                                                       vg.ffnet,
+#                                                       vg.label_find[k],
+#                                                       im_main,
+#                                                       False,)
                         
 #                        im_main = graphColorContour(vg.labels,
 #                                                    vg.label_find,
@@ -177,7 +177,7 @@ def process_frame(frame, vg, t0):
 #                                                    output,
 #                                                    im_main)
                                                        
-                        appendWithPad(label_class, output, k)
+#                        appendWithPad(label_class, output, k)
                             
             if vg.process_mode in [6,7]:
                 
@@ -401,12 +401,12 @@ def getLabelInfo(labels, label_find, k, map_M, r_wide, im, cen):
     blob = []
     
     # Si obtuve un contorno válido
-    if len(cont[0]) > 0 and len(cont[0][0]) > 4:
+    if len(cont[1]) > 0 and len(cont[1][0]) > 4:
         
-        peri = cv2.arcLength(cont[0][0],True)
-        area = cv2.contourArea(cont[0][0])
+        peri = cv2.arcLength(cont[1][0],True)
+        area = cv2.contourArea(cont[1][0])
         
-        eli = cv2.fitEllipse(cont[0][0])
+        eli = cv2.fitEllipse(cont[1][0])
         eli_max = eli[1][1]
         eli_min = eli[1][0]    
                     

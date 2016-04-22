@@ -22,7 +22,7 @@ import numpy as np
 import video_process
 
 # Captura web
-# import capture
+import capture
 
 # Importar librerias adicionales
 from common import *

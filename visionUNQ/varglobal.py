@@ -40,7 +40,7 @@ import mainYabo
 
 def importVar(name, var):
     try:
-        file = open("vars/" + name + ".obj",'rb')
+        file = open("../resources/vars/" + name + ".obj",'rb')
         object_file = pickle.load(file)
         file.close()
     except:
@@ -48,7 +48,7 @@ def importVar(name, var):
     return object_file
     
 def dumpVar(name, var):
-    filehandler = open("vars/" + name + ".obj","wb")
+    filehandler = open("../resources/vars/" + name + ".obj","wb")
     pickle.dump(var,filehandler)
     filehandler.close()
 
@@ -153,10 +153,12 @@ class VariablesGlobales():
             self.frame.showButton(2)
             self.setSpeed(1.)
         if num == 3:
+            print(self.fileName)
             self.mouse4pt = importVar(self.fileName + 'mouse4pt', self.mouse4pt)
             self.frame.showButton(1)
         if num == 2:
-            self.mouseRoi = importVar(self.fileName + 'mouseRoi', self.mouseRoi)
+            print(self.fileName)
+            self.mouseRoi = importVar(str(self.fileName) + 'mouseRoi', self.mouseRoi)
             self.frame.goToMain()
             self.switchCaptura(mainYabo.capture.AcqCapture(\
             self.vidAcq, self.captura.zoom))
@@ -247,10 +249,10 @@ class VideoGlobales():
         
         # Libreria de SURF
         self.surf_threshold = 1000
-        self.surf = cv2.SURF(self.surf_threshold)
-        self.surf.nOctaves = 1
-        self.surf.nOctaveLayers = 2
-        self.surf.upright = False
+        self.surf = cv2.xfeatures2d.SURF_create(self.surf_threshold)
+        self.surf.setNOctaves(1)
+        self.surf.setNOctaveLayers(2)
+        self.surf.setUpright(False)
         
         self.surf_kp_old = []
         self.surf_des_old = np.array(())
@@ -274,7 +276,7 @@ class VideoGlobales():
         try: del self.bg
         except: pass
         
-        self.bg = cv2.BackgroundSubtractorMOG( \
+        self.bg = cv2.bgsegm.createBackgroundSubtractorMOG(
         self.mog_history, self.mog_nmixtures, self.mog_learningRate)
         
     def createKernel(self, i=1):
