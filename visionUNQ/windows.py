@@ -36,59 +36,60 @@ import cv2
 
 EVT_NEW_IMAGE = wx.PyEventBinder(wx.NewEventType(), 0)
 
-no_resize = wx.DEFAULT_FRAME_STYLE & ~ (wx.RESIZE_BORDER | 
+no_resize = wx.DEFAULT_FRAME_STYLE & ~ (wx.RESIZE_BORDER |
                                         wx.MAXIMIZE_BOX)
 
-#----------------------------------------------------------------------
 
+# ----------------------------------------------------------------------
 def gui_openFile(parent, message):
     # Parte gráfica
     dlg = wx.FileDialog(parent, message, "../resources/", "", "*.*")
     if dlg.ShowModal() == wx.ID_OK:
         path = dlg.GetPath()
         mypath = os.path.basename(path)
-            
+
     dlg.Destroy()
     return path
-    
+
+
 def gui_select(parent, message, listElements):
-    # Parte gráfica                        
-    dlg = wx.SingleChoiceDialog(parent, message, '', \
-                                listElements, wx.CHOICEDLG_STYLE)             
+    # Parte gráfica
+    dlg = wx.SingleChoiceDialog(parent, message, '',
+                                listElements, wx.CHOICEDLG_STYLE)
     if dlg.ShowModal() == wx.ID_OK:
         index = listElements.index(dlg.GetStringSelection())
         dlg.Destroy()
-        
+
     return index
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 class ImageWindow(wx.Frame):
     def __init__(self, vg, parent, id=-1, style=no_resize):
         self.title = vg.appName
         self.vg = vg
-        
-        wx.Frame.__init__(self, parent, id, title=self.title, \
-                          size=(243,220), style=style)
+
+        wx.Frame.__init__(self, parent, id, title=self.title,
+                          size=(243, 220), style=style)
 
         self.panel = []
-        
+
         # Frame contiene a todos los demas
         self.panel.append(PanelFrame(self))             # 0
         self.panel.append(PanelSelect(self.panel[0]))   # 1
         self.panel.append(PanelMain(self.panel[0]))     # 2
         self.panel.append(PanelButtons(self.panel[0]))  # 3
-        
+
         self.panel[0].Show()
         self.panel[1].Show()
         self.panel[2].Hide()
         self.panel[3].Hide()
-        
+
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.Show()
         self.Center()
-    
+
     def OnClose(self, event):
         dlg = wx.MessageDialog(self,
             'Desea salir de %s' % self.title,
@@ -99,28 +100,28 @@ class ImageWindow(wx.Frame):
             self.vg.saveStuff()
             self.vg.mustExec = False
             self.Destroy()
-    
+
     def goToMain(self):
         self.vg.setSpeed(0.8)
         
         self.panel[1].Hide()
         self.panel[2].Show()
-        self.panel[3].Show()        
-        
+        self.panel[3].Show()
+
         self.setFrameSize(self.vg.captura.sx, \
                           self.vg.captura.sy, \
                           self.vg.intBH)
-        
+
         self.stopBusyBox()
-        
+
     def startBusyBox(self, message):
         self.busyBox = wx.BusyInfo(message, self)
         self.Hide()
-        
+
     def stopBusyBox(self):
         del self.busyBox
         self.Show()
-        
+
     def setFrameSize(self, sx, sy, intBH):
         # Tiene varios sleep para no tener problemas con
         # el multithreading de la ventana
@@ -130,7 +131,7 @@ class ImageWindow(wx.Frame):
         self.panel[3].SetSize((sx,intBH))
         self.panel[3].SetPosition((0,sy))
         self.Center()
-        
+
     def showButton(self, index):
         self.panel[3].showButton(index)
 
@@ -141,23 +142,26 @@ class PanelFrame(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.parent = parent
         self.vg = parent.vg
-        
+
 #----------------------------------------------------------------------
 
 class ParameterSlider(wx.Slider):
     def __init__(self, parent, parameter, minV, maxV, scale):
-        wx.Slider.__init__(self, parent, size=wx.DefaultSize, style=wx.SL_LABELS)
-        
+        wx.Slider.__init__(self,
+                           parent,
+                           size=wx.DefaultSize,
+                           style=wx.SL_LABELS)
+
         self.vg = parent.vg
         self.parameter = parameter
         self.scale = scale
-        
+
         value = getattr(self.vg.pv, parameter)
-        
+
         self.SetValue(value*scale)
         self.SetMin(minV*scale)
         self.SetMax(maxV*scale)
-        
+
     def OnScroll(self, e):
         value = self.GetValue()
         if self.scale != 1: value = value/self.scale
@@ -166,33 +170,35 @@ class ParameterSlider(wx.Slider):
             self.vg.pv.createKernel()
         elif self.parameter[:3] == 'mog':
             self.vg.pv.createBgFilter()
-            
+
 #----------------------------------------------------------------------
-        
+
 class PanelButtons(wx.Panel):
     def __init__(self,parent):
         self.vg = parent.vg
         self.parent = parent
-        wx.Panel.__init__(self, parent, size=(self.vg.intBH,self.vg.intBH))
-        
-        self.panel = []        
+        wx.Panel.__init__(self,
+                          parent,
+                          size=(self.vg.intBH,self.vg.intBH))
+
+        self.panel = []
         self.panel.append(ButtonsROI(self))
         self.panel.append(Buttons4pt(self))
         self.panel.append(ButtonsBFS(self))
         self.panel.append(ButtonsOcl(self))
         self.panel.append(ButtonsRun(self))
-        
+
         self.showButton(0)
-        
+
         self.BackgroundColour = wx.BLACK
-        
+
     def showButton(self, index):
         for i in range(0,len(self.panel)):
             if i==index:
                 self.panel[i].Show()
             else:
                 self.panel[i].Hide()
-        
+
 class ButtonsBFS(wx.Panel):
     def __init__(self,parent):
         self.parent = parent
@@ -200,28 +206,28 @@ class ButtonsBFS(wx.Panel):
         wx.Panel.__init__(self, parent, size=(800,self.vg.intBH))
         self.BackgroundColour = wx.BLACK
         self.ForegroundColour = wx.WHITE
-        
+
         self.p = []
         self.p.append(ParameterSlider(self, \
         'mog_learningRate', 0.01, 0.99, 100.))
-        
+
         self.p.append(ParameterSlider(self, \
         'mog_history', 50, 99, 1))
-        
+
         self.p.append(ParameterSlider(self, \
         'mog_nmixtures', 1, 50, 1))
-        
+
         self.p.append(ParameterSlider(self, \
         'ksize1', 5, 25, 1))
-        
+
         self.p.append(ParameterSlider(self, \
         'playSpeed', 0.01, 1., 100.))
-        
+
         for i in range(0,len(self.p)):
             self.p[i].Bind(wx.EVT_SCROLL, self.p[i].OnScroll)
-        
+
         b = wx.Button(self, -1, "Ok", (30,50))
-        
+
         self.sizer = wx.GridSizer(3,8,0,0)
         self.sizer.Add(wx.StaticText(self, \
         label='  Ajuste los parámetros para una detección óptima. '+\
@@ -241,12 +247,12 @@ class ButtonsBFS(wx.Panel):
         self.sizer.Add(wx.StaticText(self, label='velocidad'), 0, wx.ALIGN_CENTER)
         self.sizer.Add(self.p[4], 0, wx.EXPAND)
         self.SetSizer(self.sizer)
-        
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, b)
-        
+
     def OnOk(self, event):
         self.vg.switchToMode(5)
-        
+
 class ButtonsROI(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
@@ -266,19 +272,19 @@ class ButtonsROI(wx.Panel):
         self.sizer.Add(b1, 0, wx.ALIGN_CENTER)
         self.sizer.Add((0,0), 0)
         self.sizer.Add(b2, 0, wx.ALIGN_CENTER)
-        
+
         self.SetSizer(self.sizer)
-        
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, b1)
         self.Bind(wx.EVT_BUTTON, self.OnClean, b2)
-        
+
     def OnOk(self, event):
         if self.vg.mouseRoi[2] != ():
             self.vg.switchToMode(3)
-        
+
     def OnClean(self, event):
         self.vg.mouseRoi = [(),(),()]
-        
+
 class Buttons4pt(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
@@ -298,19 +304,19 @@ class Buttons4pt(wx.Panel):
         self.sizer.Add(b1, 0, wx.ALIGN_CENTER)
         self.sizer.Add((0,0), 0)
         self.sizer.Add(b2, 0, wx.ALIGN_CENTER)
-        
+
         self.SetSizer(self.sizer)
-        
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, b1)
         self.Bind(wx.EVT_BUTTON, self.OnClean, b2)
-        
+
     def OnOk(self, event):
         if self.vg.mouse4pt[3] != ():
             self.vg.switchToMode(4)
-    
+
     def OnClean(self, event):
         self.vg.mouse4pt = [(),(),(),()]
-        
+
 class ButtonsOcl(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
@@ -318,11 +324,11 @@ class ButtonsOcl(wx.Panel):
         wx.Panel.__init__(self, parent, size=(800,self.vg.intBH))
         self.BackgroundColour = wx.BLACK
         self.ForegroundColour = wx.WHITE
-        
+
         b1 = wx.Button(self, -1, "<-", (30,50))
         b2 = wx.Button(self, -1, "->", (30,50))
         b3 = wx.Button(self, -1, "Ok", (30,50))
-        
+
         self.sizer = wx.GridSizer(2,3,2,2)
         self.sizer.Add(wx.StaticText(self, 0, \
         '  Por favor, haga click sobre las oclusiones ocurridas '+ \
@@ -332,13 +338,13 @@ class ButtonsOcl(wx.Panel):
         self.sizer.Add(b1, 0, wx.ALIGN_CENTER)
         self.sizer.Add(b2, 0, wx.ALIGN_CENTER)
         self.sizer.Add(b3, 0, wx.ALIGN_CENTER)
-        
-        self.SetSizer(self.sizer)        
-        
+
+        self.SetSizer(self.sizer)
+
         self.Bind(wx.EVT_BUTTON, self.OnPrev, b1)
         self.Bind(wx.EVT_BUTTON, self.OnNext, b2)
         self.Bind(wx.EVT_BUTTON, self.OnOk, b3)
-        
+
     def OnPrev(self, event):
         self.vg.revK()
 
@@ -357,7 +363,7 @@ class ButtonsRun(wx.Panel):
         wx.Panel.__init__(self, parent, size=(800,self.vg.intBH))
         self.BackgroundColour = wx.BLACK
         self.ForegroundColour = wx.WHITE
-        
+
         b1 = wx.Button(self, -1, "a", (30,50))
         b2 = wx.Button(self, -1, "b", (30,50))
         b3 = wx.Button(self, -1, "c", (30,50))
@@ -430,20 +436,20 @@ class PanelSelect(wx.Panel):
         
         self.vg.switchToMode(1)
         self.WainUntilLoad()
-        
+
     def WainUntilLoad(self):
         while len(self.vg.vidAcq) < self.vg.intAcqFrames:
             time.sleep(0.5)
-            
+
         self.vg.switchToMode(2)
-        
+
 #----------------------------------------------------------------------
 
 class PanelMain(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         self.vg = parent.vg
-        
+
         self.img = wx.EmptyImage(2,2)
         self.bmp = self.img.ConvertToBitmap()
         
@@ -451,15 +457,15 @@ class PanelMain(wx.Panel):
         self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
         self.Bind(wx.EVT_LEFT_UP, self.OnLeftUp)
         self.Bind(wx.EVT_MOTION, self.OnMouseMove)
-        
+
         self.eventLock = None
         self.pause = False
-        
+
         self.InitBuffer()
-        
+
     def OnLeftDown(self, event):
         x,y = event.GetPosition()
-        
+
         if self.vg.process_mode == 2:
             # Guardo las posiciones del mouse con los
             # siguientes criterios:
