@@ -7,7 +7,7 @@ Group members: Agustín Yabo, Damián Estanganelli, Damián Oliva, Lilian Garcí
 
 Use
 ---
-To use this python code there is no installation, just copy the folder visionUNQ to your computer and import it as a package. Runs on python2 (intended to run with python3) and OpenCV-3.1.0.
+To use this python code there is no installation, just copy the folder visionUNQ to your computer and import it as a package. Porting from python2 to python3 and OpenCV(2.4?).
 
 Repository Content
 ------------------
@@ -17,6 +17,7 @@ Repository Content
 - resources : contains all non code files (images, videos, etc).
 - README.md : this file
 - LICENSE.md : The license that applies to all the code in the repository. BSD 3-Clause license, same as OpenCV.
+- HISTORIAL.md : Log of notable changes and annotations in general.
 
 Project Description
 -------------------

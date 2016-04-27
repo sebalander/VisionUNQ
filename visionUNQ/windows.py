@@ -108,9 +108,10 @@ class ImageWindow(wx.Frame):
         self.panel[2].Show()
         self.panel[3].Show()
 
-        self.setFrameSize(self.vg.captura.sx, \
-                          self.vg.captura.sy, \
-                          self.vg.intBH)
+        sx = numpy.max([self.vg.captura.sx,self.vg.windowMinWidth])
+        sy = numpy.max([self.vg.captura.sy,self.vg.windowMinHeight])
+
+        self.setFrameSize(sx, sy, self.vg.intBH)
 
         self.stopBusyBox()
 

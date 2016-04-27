@@ -46,13 +46,13 @@ def importVar(name, var):
     except:
         object_file = var
     return object_file
-    
+
 def dumpVar(name, var):
     filehandler = open("../resources/vars/" + name + ".obj","wb")
     pickle.dump(var,filehandler)
     filehandler.close()
 
-class VariablesGlobales():            
+class VariablesGlobales():
     def __init__(self):
         # Variables de Visión Artificial
         self.im_hist = 0
@@ -60,10 +60,10 @@ class VariablesGlobales():
         self.im_label = 0
         self.labels = 0
         self.mouseLabel = []
-        
+    
         # Relacionado al modo de ejecución
         self.captura = ()
-        self.zoom = 1.
+        self.zoom = 1.5
         self.appName = 'UNQ Traffic Camera'
         self.threaded_mode = False
         self.intVideos = 4
@@ -71,28 +71,28 @@ class VariablesGlobales():
         self.boolRecord = True
         self.tmp_bool = True
         self.mustExec = True
-        
+
         self.mouseRoi = [(),(),()]
         self.mouse4pt = [(),(),(),()]
         self.real4pt = [[0,0],[0,550.],[100.,550.],[100.,0]] # Capital
         #self.real4pt = [[0,0],[0,860.],[100.,860.],[100.,0]] # Salada
-        
+
         self.perspectiveR = 0
         
         # Variable que guarda el video capturado
         self.vidAcq = []
-        
+
         # Número de ejecución
         self.k = 0
-        
+
         # Creo el objeto de multithreading
         self.mt = MultiThreadingGlobales()
-        
+
         # Creo el objeto de video
         self.pv = VideoGlobales()
-        
+
         # Detección con SURF/FLANN
-        
+
         # Process mode indica en qué instancia de la ejecucion estoy:
         # 0 - inicial
         # 1 - captura de cuadros
@@ -104,13 +104,16 @@ class VariablesGlobales():
         # 7 - inicio
         self.process_mode = 0
 
-        # Numero de video a mostrar        
+        # Numero de video a mostrar
         self.intShow = 1
-        
+
         # La ventana
         self.frame = ()
-        self.intBH = 100
-    
+        self.intBH = 150  # altura de la botonera
+        
+        self.windowMinWidth = 800
+        self.windowMinHeight = 600
+
     def setCaptura(self, captura):
         self.captura = captura
         
@@ -119,7 +122,7 @@ class VariablesGlobales():
         self.im_lanes = 0
         
     def switchCaptura(self, captura):
-        self.captura_bk = self.captura        
+        self.captura_bk = self.captura
         self.captura = captura
         
     def restoreCaptura(self):

@@ -457,7 +457,7 @@ def matchBilateralKeypoints(flann, surf_des, surf_des_old, flann_rt):
 
 def matchKeypoints(flann, surf_des, surf_des_old, flann_rt):
     # Matcheo
-    matches = flann.knnMatch(surf_des, surf_des_old, k = 2)
+    matches = flann.knnMatch(surf_des, surf_des, k = 2)
     
     flann_good = []
     flann_distance = 0
