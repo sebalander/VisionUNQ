@@ -2,7 +2,5 @@
 # __init__.py file for package cameras
 __all__ = [ 'onvif',
             'ui',
-            'CameraManager',
-            'FishEyeCamera',
-            'mainOnvif',
-            'PTZCamera']
+            'core',
+            'mainOnvif']

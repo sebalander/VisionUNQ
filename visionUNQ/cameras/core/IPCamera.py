@@ -5,7 +5,7 @@ Created on Sat Feb 20 16:47:28 2016
 @author: lilian
 """
     
-from onvif.client import ONVIFCamera
+from onvif import ONVIFCamera
 
 
 class IPCamera(ONVIFCamera):
