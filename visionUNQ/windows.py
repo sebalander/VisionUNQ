@@ -2,6 +2,8 @@
 """
 Created on Tue Oct 28 19:29:26 2014
 
+Este es todo elmaneje de ventanas con botoncitos y demás cositas
+
 funciones
 - gui_openFile
 - gui_select
@@ -30,7 +32,7 @@ import wx
 import numpy
 import threading
 import time
-import mainYabo
+import mainPlanasBSFeatures
 import os
 import cv2
 
@@ -412,7 +414,7 @@ class PanelSelect(wx.Panel):
     def OnButtonFile(self, evt):
         strFile = gui_openFile(self, "Seleccione el video")
         
-        self.vg.setCaptura(mainYabo.capture.FileCapture(strFile, self.vg.zoom))
+        self.vg.setCaptura(mainPlanasBSFeatures.capture.FileCapture(strFile, self.vg.zoom))
         self.vg.fileName = (strFile.rpartition('/')[-1].rpartition('.')[0] + '_') #.encode('ascii')
         
         self.vg.switchToMode(1)
@@ -433,7 +435,7 @@ class PanelSelect(wx.Panel):
 
         index = gui_select(self, 'Seleccione una cámara', listNames)
         
-        self.vg.setCaptura(mainYabo.capture.WebCapture(listSites[index], 1.))
+        self.vg.setCaptura(mainPlanasBSFeatures.capture.WebCapture(listSites[index], 1.))
         
         self.vg.switchToMode(1)
         self.WainUntilLoad()
@@ -488,7 +490,7 @@ class PanelMain(wx.Panel):
 #            
 #                i = self.vg.labels[0][y-ry,x-rx]
 #                tmp_label = (self.vg.labels[0]==i)
-#                w, h = mainYabo.video_process.getLabelSize(tmp_label)
+#                w, h = mainPlanasBSFeatures.video_process.getLabelSize(tmp_label)
 #                ny = self.vg.centers[i-1][0]
 #                numpy.disp(str((w,h,ny)))
         

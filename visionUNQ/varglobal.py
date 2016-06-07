@@ -2,6 +2,10 @@
 """
 Created on Thu Oct 23 12:19:42 2014
 
+Variables globales que sirven para saber enq ue etapa del programa
+estamos y para guardar todo lo que hay que ir comunicando de una
+función a otra.
+
 funciones
 - importVar
 - dumpVar
@@ -36,7 +40,7 @@ import neurolab
 # Importo Pickle
 import pickle
 
-import mainYabo
+import mainPlanasBSFeatures
 
 def importVar(name, var):
     try:
@@ -145,7 +149,7 @@ class VariablesGlobales():
             #self.pv.mog_learningRate_bk = self.pv.mog_learningRate
             #self.pv.mog_learningRate = 0
         if num == 4:
-            self.im_mask = mainYabo.video_process.createMask(self.captura.sx,
+            self.im_mask = mainPlanasBSFeatures.video_process.createMask(self.captura.sx,
                             self.captura.sy,
                             self.mouseRoi[0],
                             self.mouseRoi[2],
@@ -163,7 +167,7 @@ class VariablesGlobales():
             print(self.fileName)
             self.mouseRoi = importVar(str(self.fileName) + 'mouseRoi', self.mouseRoi)
             self.frame.goToMain()
-            self.switchCaptura(mainYabo.capture.AcqCapture(\
+            self.switchCaptura(mainPlanasBSFeatures.capture.AcqCapture(\
             self.vidAcq, self.captura.zoom))
             self.createVideoCapture()
         if num == 1:
@@ -204,7 +208,7 @@ class VariablesGlobales():
     def createVideoCapture(self):
         # Defino la grabación del video
         if self.boolRecord:
-            self.objRec = mainYabo.capture.VideoRec(self.intVideos,
+            self.objRec = mainPlanasBSFeatures.capture.VideoRec(self.intVideos,
                                                 self.captura.sx,
                                                 self.captura.sy)
     
@@ -234,9 +238,6 @@ class VideoGlobales():
         # Variables de Bk/Fg Substraction
         self.k_init = 20
         
-        self.ksize0 = 2
-        self.ksize1 = 15
-        
         self.mog_history = 100
         self.mog_nmixtures = 20 #25
         self.mog_learningRate = 0.05
@@ -246,6 +247,9 @@ class VideoGlobales():
         self.playSpeed = 1.
 
         # Kernel para las operaciones morfológicas
+        self.ksize0 = 2  # tamaño
+        self.ksize1 = 15  # tamaño
+        
         self.kernel = []
         self.kernel.append(np.ones((self.ksize0,self.ksize0),np.uint8))
         self.createKernel()
@@ -273,7 +277,7 @@ class VideoGlobales():
         self.kp_dist_vect = []
         self.bf_vect = []
         self.kp_hist = [[],[],[],[],[]]
-        self.dens_hist = []        
+        self.dens_hist = []
         
     def createBgFilter(self):
         try: del self.bg

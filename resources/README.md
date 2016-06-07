@@ -7,3 +7,9 @@ keep the files low weight. Images and small videos are fine.
  - map.png : satelite map image where transformation spits coordinates to.
  - parametrosOptimizados.txt : transformation parameters to take a 
  coordinate in the VCA sample video to the map satelite image coords.
+ - MatrizCoordenadas.txt: tiene las listas de puntos para optimizar. son
+    cinco columnas: xM yM zM xI yI
+ - distortionParms: tiene los parametros de distorsión
+    (k1, k2, p1, p2[, k3[, k4, k5, k6]])
+ - pinHoleParms: tiene los coeficientes de calibracion pin hole
+    fx fy cx cy

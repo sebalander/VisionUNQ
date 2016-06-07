@@ -48,62 +48,64 @@ import pickle
 
 import cv2
 
-#------------------------------------------------------------------------- 
+#-----------------------------------------------------------------------
 # Esta función trabaja cuadro a cuadro sobre lo capturado
-#------------------------------------------------------------------------- 
-def process_frame(frame, vg, t0):  
+#-----------------------------------------------------------------------
+def process_frame(frame, vg, t0):
     global im_backfore2
 
     res = []
-    for i in range(0,vg.intVideos+1): res.append(())
+    for i in range(0, vg.intVideos + 1):
+        res.append(())
 
     # Si no está puesto process_mode no hago nada
-    if vg.process_mode in [3,4,5,6,7]:
-        
+    if vg.process_mode in [3, 4, 5, 6, 7]:
+
         frame_original = frame.copy()
         frame = getRoi(frame, vg.mouseRoi[0], vg.mouseRoi[2])
         vg.im_frame = frame.copy()
         im_main = frame.copy()
         im_gray = cv2.cvtColor(im_main, cv2.COLOR_RGB2GRAY)
-        
+
+        # Si es el primer cuadro
         if vg.k == 0:
-            
+
             # Defino por primera vez im_hist/im_lanes
             if np.shape(vg.im_hist) == ():
                 vg.im_hist = np.zeros(np.shape(frame)[0:2])
                         
             if np.shape(vg.im_lanes) == ():
                 vg.im_lanes = np.ones(np.shape(frame)[0:2])
-        
+
 #        try:
 #            if vg.k/2. == int(vg.k/2.):
 #                im_main = drawLastFrame(im_main, vg.im_main_old)
 #        except:
 #            pass
-        
+
         if vg.process_mode in [4,5,6,7]:
             #-----------------------------------------------------------------
             # Primera ejecucion
             #-----------------------------------------------------------------
-            
+
             # Separo el fondo y enmascaro
             vg.im_bf = vg.pv.bg.apply(frame, (0,0), vg.pv.mog_learningRate)
             vg.im_bf = vg.im_bf*(vg.im_mask>0)
-            
+
             # Lleno aujeros
-            sp.ndimage.binary_fill_holes(vg.im_bf)               
-            
+            sp.ndimage.binary_fill_holes(vg.im_bf)
+
             vg.im_bf2 = vg.im_bf.copy()
             vg.im_bf3 = 0*frame[:,:,0].astype('uint8')
-            
+
             # Operaciones morfológicas
             vg.im_bf2 = cv2.morphologyEx(vg.im_bf2, cv2.MORPH_ERODE, vg.pv.kernel[0])
             vg.im_bf2 = cv2.morphologyEx(vg.im_bf2, cv2.MORPH_CLOSE, vg.pv.kernel[1])
             vg.im_bf3 = cv2.morphologyEx(vg.im_bf2, cv2.MORPH_DILATE, vg.pv.kernel[1])
-            
+
             res[2] = ['BG/FG Substractor', vg.im_bf]
             res[3] = ['BG/FG + Morph', vg.im_bf2]
-            
+
             # Creo la máscara para filtrar por fuera de 4pt
             try:
                 vg.mask_contour
@@ -112,43 +114,42 @@ def process_frame(frame, vg, t0):
                 vg.im_mask_border = 0*frame[:,:,0].astype('uint8')
                 cv2.drawContours(vg.im_mask_border,vg.mask_contour[1],0,255,2)
                 vg.im_mask_border = (vg.im_mask_border>0)
-            
+
             vg.im_bf2 = vg.im_bf2*(vg.im_lanes>0)
-            
+
             # Grafico bordes sobre la figura a mostrar
             vg.contours = cv2.findContours(vg.im_bf2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cv2.drawContours(im_main,vg.contours[1],-1,(150,200,0),2)  
-            
+
             contours = cv2.findContours(np.uint8(vg.im_mask),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cv2.drawContours(im_main,contours[1],-1,(251,244,213),2)
-            
+
             # Separo en blobs
             vg.labels = sp.ndimage.label(vg.im_bf2)
             vg.label_find = sp.ndimage.find_objects(vg.labels[0])
-            
+
             # Si detecto al menos 1 cuerpo
             if vg.labels[1]>0:
-                
+
                 # Saco el centro de masa
                 vg.centers = getCentersOfLabels(vg.im_bf2, vg.labels)
-                
+
                 # Label Per Class
                 label_class = []
-                
+
                 # Para cada blob
                 for k in range(0,vg.labels[1]):
-                    
+
                     # Dibujo centros
                     #cv2.circle(im_main,(vg.centers[k,1],vg.centers[k,0]),2,(0,0,255),-1)
-                    
                     # Si no hay intersección con los bordes
                     if np.sum((vg.labels[0] == k+1)[vg.im_mask_border]) == 0:
-                        
+
                         im_label = getLabelImage(im_gray,
                                                  vg.im_bf2,
                                                  vg.label_find,
                                                  k)
-                        
+
                         cen = vg.centers[k]
                         cen = (cen[1],cen[0])
                         
@@ -194,19 +195,18 @@ def process_frame(frame, vg, t0):
                     cv2.circle(im_main, (int(kp.pt[0]),int(kp.pt[1])),
                                int(kp.size/2), (240,100,0), 1)
 
-                
                 # Si ya hubo una primera ejecucion
                 if vg.k > 1:
-                    
+
                     if len(vg.pv.surf_des) > 1 and len(vg.pv.surf_des_old) > 1:
-                        
+
                         # Matcheo con FLANN
                         vg.pv.flann_good = matchBilateralKeypoints(vg.pv.flann,
                                                                    vg.pv.surf_des,
                                                                    vg.pv.surf_des_old,
                                                                    vg.pv.flann_rt)
                                                                    
-                        # Filtro los KPs que sirven                                                                   
+                        # Filtro los KPs que sirven
                         vg.pv.kp_list = getKPList(vg.pv.flann_good,
                                                   vg.pv.surf_kp,
                                                   vg.pv.surf_kp_old)
@@ -216,11 +216,13 @@ def process_frame(frame, vg, t0):
                                                            (int(vg.real4pt[2][0]),
                                                             int(vg.real4pt[2][1])))
                         
+                        # Dibujo circulos en la imagen transformada
                         for k in range(0,vg.labels[1]):
                             cenM = vg.centers[k]
                             cenM = intT(transformPerspective((cenM[1],cenM[0]),vg.map_M))
                             cv2.circle(vg.im_transf,cenM,2,(0,0,255),-1)
-                                                            
+                        
+                        # Calculo la densidad porcentual
                         street_density = filterDensity(np.sum(vg.im_bf2>0), vg.pv.dens_hist)
     
                         if len(vg.pv.flann_good) > 0:
@@ -248,7 +250,6 @@ def process_frame(frame, vg, t0):
                             try:
                                 vg.pv.kp_dist_vect.append(flann_distance)
                                 vg.pv.bf_vect.append(street_density)
-                            
                             except:
                                 pass
                                 

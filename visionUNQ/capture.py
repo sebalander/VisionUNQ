@@ -2,6 +2,8 @@
 """
 Created on Tue Jul 15 13:56:11 2014
 
+polimorfismo para abrir video y cositas
+
 Declaration of clases
  - Capture
  - WebCapture
@@ -91,7 +93,7 @@ class FileCapture(Capture):
         
         #time.sleep(0.6)
         
-        frame = cv2.resize(frame, (0,0), fx=self.zoom, fy=self.zoom)         
+        frame = cv2.resize(frame, (0,0), fx=self.zoom, fy=self.zoom)
         
         return ret, frame
 
